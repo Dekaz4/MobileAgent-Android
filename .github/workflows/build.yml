@@ -12,10 +12,10 @@ jobs:
           distribution: 'temurin'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        working-directory: ./MobileAgent-Android
+        working-directory: MobileAgent-Android
       - name: Build with Gradle
         run: ./gradlew assembleDebug
-        working-directory: ./MobileAgent-Android
+        working-directory: MobileAgent-Android
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
