@@ -10,18 +10,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build with Gradle
+      - name: Fix gradle config and Build
         run: |
-          GRADLEW_PATH=$(find . -name "gradlew" -maxdepth 4 | head -n  1)
+          GRADLEW_PATH=$(find . -name "gradlew" -maxdepth 4 | head -n 1)
           PROJECT_DIR=$(dirname "$GRADLEW_PATH")
           cd "$PROJECT_DIR"
+          
+          # Parcheamos el archivo build.gradle.kts problemático para eliminar la línea de la ruta vacía
+          find . -name "build.gradle.kts" -exec sed -i '/path/d' {} +
+          
           chmod +x gradlew
-          
-          # Creamos un archivo local.properties vacío para evitar que falle buscando rutas
-          touch local.properties
-          
-          # Compilamos pasando parámetros para evitar variables vacías
-          ./gradlew assembleDebug -Pandroid.defaults.buildfeatures.buildconfig=true
+          ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
