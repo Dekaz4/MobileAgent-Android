@@ -10,15 +10,18 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Find project and Build with Gradle
+      - name: Build with Gradle
         run: |
-          # Busca automáticamente la carpeta que contiene el archivo gradlew
-          GRADLEW_PATH=$(find . -name "gradlew" -maxdepth 4 | head -n 1)
+          GRADLEW_PATH=$(find . -name "gradlew" -maxdepth 4 | head -n  1)
           PROJECT_DIR=$(dirname "$GRADLEW_PATH")
-          echo "=> Proyecto encontrado en: $PROJECT_DIR"
           cd "$PROJECT_DIR"
           chmod +x gradlew
-          ./gradlew assembleDebug
+          
+          # Creamos un archivo local.properties vacío para evitar que falle buscando rutas
+          touch local.properties
+          
+          # Compilamos pasando parámetros para evitar variables vacías
+          ./gradlew assembleDebug -Pandroid.defaults.buildfeatures.buildconfig=true
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
