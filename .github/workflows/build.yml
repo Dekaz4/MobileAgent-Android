@@ -3,9 +3,6 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: MobileAgent-Android
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -13,12 +10,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug
+      - name: Find project and Build with Gradle
+        run: |
+          # Busca automáticamente la carpeta que contiene el archivo gradlew
+          GRADLEW_PATH=$(find . -name "gradlew" -maxdepth 4 | head -n 1)
+          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+          echo "=> Proyecto encontrado en: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          chmod +x gradlew
+          ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: MobileAgent-APK
-          path: MobileAgent-Android/app/build/outputs/apk/debug/*.apk
+          path: '**/app/build/outputs/apk/debug/*.apk'
